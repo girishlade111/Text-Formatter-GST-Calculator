@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Formatter & GST Calculator</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --text-color: #2b2d42;
+            --light-color: #f8f9fa;
+            --success-color: #4caf50;
+            --error-color: #f44336;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .app-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .app-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.3rem;
+        }
+
+        /* Text Formatter Styles */
+        .text-formatter {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-area, .output-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .format-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .format-btn {
+            padding: 10px 15px;
+            background-color: var(--light-color);
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .format-btn:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+        }
+
+        .format-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .copy-btn {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .copy-btn:hover {
+            background-color: #3e8e41;
+        }
+
+        /* GST Calculator Styles */
+        .gst-calculator {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        input[type="number"] {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .calculate-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .results {
+            background-color: var(--light-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .total-amount .result-value {
+            color: var(--success-color);
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Icons */
+        .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background-color: var(--error-color);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Multi-Tool Dashboard</h1>
+            <p class="subtitle">Text Formatter & GST Calculator</p>
+        </header>
+
+        <div class="app-container">
+            <!-- Text Formatter Section -->
+            <section class="app-section text-formatter-section">
+                <div class="section-title">
+                    <i class="fas fa-text icon"></i>
+                    <h2>WhatsApp & Social Media Text Formatter</h2>
+                </div>
+                
+                <div class="text-formatter">
+                    <div class="input-area">
+                        <label for="text-input">Enter your text:</label>
+                        <textarea id="text-input" placeholder="Type or paste your text here..."></textarea>
+                    </div>
+                    
+                    <div class="format-options">
+                        <button class="format-btn active" data-format="bold"><i class="fas fa-bold"></i> Bold</button>
+                        <button class="format-btn" data-format="italic"><i class="fas fa-italic"></i> Italic</button>
+                        <button class="format-btn" data-format="underline"><i class="fas fa-underline"></i> Underline</button>
+                        <button class="format-btn" data-format="strikethrough"><i class="fas fa-strikethrough"></i> Strikethrough</button>
+                        <button class="format-btn" data-format="monospace"><i class="fas fa-code"></i> Monospace</button>
+                        <button class="format-btn" data-format="clear"><i class="fas fa-eraser"></i> Clear Format</button>
+                    </div>
+                    
+                    <div class="output-area">
+                        <label for="text-output">Formatted Text:</label>
+                        <textarea id="text-output" readonly placeholder="Formatted text will appear here..."></textarea>
+                        <button class="copy-btn" id="copy-btn">
+                            <i class="fas fa-copy"></i> Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- GST Calculator Section -->
+            <section class="app-section gst-calculator-section">
+                <div class="section-title">
+                    <i class="fas fa-calculator icon"></i>
+                    <h2>GST Calculator</h2>
+                </div>
+                
+                <div class="gst-calculator">
+                    <div class="input-group">
+                        <label for="amount">Amount (₹)</label>
+                        <input type="number" id="amount" placeholder="Enter amount" min="0" step="0.01">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>GST Rate (%)</label>
+                        <div class="input-row">
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="gst-rate" value="5" checked> 5%
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="gst-rate" value="12"> 12%
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="gst-rate" value="18"> 18%
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="gst-rate" value="28"> 28%
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Calculation Type</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="calc-type" value="add" checked> Add GST
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="calc-type" value="remove"> Remove GST
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="calculate-btn" id="calculate-btn">
+                        <i class="fas fa-calculator"></i> Calculate GST
+                    </button>
+                    
+                    <div class="results" id="gst-results" style="display: none;">
+                        <div class="result-row">
+                            <span class="result-label">Original Amount:</span>
+                            <span class="result-value" id="original-amount">₹0.00</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">GST Amount:</span>
+                            <span class="result-value" id="gst-amount">₹0.00</span>
+                        </div>
+                        <div class="result-row total-amount">
+                            <span class="result-label">Total Amount:</span>
+                            <span class="result-value" id="total-amount">₹0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Text Formatter Functionality
+            const textInput = document.getElementById('text-input');
+            const textOutput = document.getElementById('text-output');
+            const formatBtns = document.querySelectorAll('.format-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            
+            // Format functions
+            const formatFunctions = {
+                bold: (text) => `*${text}*`,
+                italic: (text) => `_${text}_`,
+                underline: (text) => `__${text}__`,
+                strikethrough: (text) => `~${text}~`,
+                monospace: (text) => `\`\`\`${text}\`\`\``,
+                clear: (text) => text.replace(/[*_~`]/g, '')
+            };
+            
+            // Format button event listeners
+            formatBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active state
+                    formatBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Get current text
+                    const currentText = textInput.value.trim();
+                    if (!currentText) return;
+                    
+                    // Apply formatting
+                    const formatType = this.getAttribute('data-format');
+                    const lines = currentText.split('\n');
+                    
+                    if (formatType === 'clear') {
+                        // Special handling for clear formatting
+                        textOutput.value = lines.map(line => formatFunctions.clear(line)).join('\n');
+                    } else {
+                        // Apply formatting to each line
+                        textOutput.value = lines.map(line => {
+                            // Skip empty lines
+                            if (!line.trim()) return line;
+                            
+                            // Check if line is already formatted with this style
+                            const formatChar = {
+                                bold: '*',
+                                italic: '_',
+                                underline: '__',
+                                strikethrough: '~',
+                                monospace: '```'
+                            }[formatType];
+                            
+                            // If already formatted with this style, remove the formatting
+                            if ((formatType === 'monospace' && line.startsWith('```') && line.endsWith('```')) ||
+                                (formatType !== 'monospace' && line.startsWith(formatChar) && line.endsWith(formatChar))) {
+                                return line.slice(formatType === 'monospace' ? 3 : 1, line.length - (formatType === 'monospace' ? 3 : 1));
+                            }
+                            
+                            // Otherwise, apply the formatting
+                            return formatFunctions[formatType](line);
+                        }).join('\n');
+                    }
+                });
+            });
+            
+            // Auto format on input change (with debounce)
+            let formatTimeout;
+            textInput.addEventListener('input', function() {
+                clearTimeout(formatTimeout);
+                formatTimeout = setTimeout(() => {
+                    const activeBtn = document.querySelector('.format-btn.active');
+                    if (activeBtn) activeBtn.click();
+                }, 300);
+            });
+            
+            // Copy to clipboard
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = textOutput.value.trim();
+                if (!textToCopy) {
+                    showNotification('Nothing to copy', 'error');
+                    return;
+                }
+                
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => showNotification('Text copied to clipboard!'))
+                    .catch(() => {
+                        // Fallback for browsers that don't support clipboard API
+                        textOutput.select();
+                        document.execCommand('copy');
+                        showNotification('Text copied to clipboard!');
+                    });
+            });
+            
+            // GST Calculator Functionality
+            const amountInput = document.getElementById('amount');
+            const gstRateRadios = document.querySelectorAll('input[name="gst-rate"]');
+            const calcTypeRadios = document.querySelectorAll('input[name="calc-type"]');
+            const calculateBtn = document.getElementById('calculate-btn');
+            const gstResults = document.getElementById('gst-results');
+            const originalAmountEl = document.getElementById('original-amount');
+            const gstAmountEl = document.getElementById('gst-amount');
+            const totalAmountEl = document.getElementById('total-amount');
+            
+            // Calculate GST
+            function calculateGST() {
+                const amount = parseFloat(amountInput.value) || 0;
+                const gstRate = parseFloat(document.querySelector('input[name="gst-rate"]:checked').value);
+                const calcType = document.querySelector('input[name="calc-type"]:checked').value;
+                
+                let originalAmount, gstAmount, totalAmount;
+                
+                if (calcType === 'add') {
+                    // Add GST to original amount
+                    originalAmount = amount;
+                    gstAmount = originalAmount * (gstRate / 100);
+                    totalAmount = originalAmount + gstAmount;
+                } else {
+                    // Remove GST from total amount
+                    totalAmount = amount;
+                    const multiplier = 1 + (gstRate / 100);
+                    originalAmount = totalAmount / multiplier;
+                    gstAmount = totalAmount - originalAmount;
+                }
+                
+                // Update UI
+                originalAmountEl.textContent = `₹${originalAmount.toFixed(2)}`;
+                gstAmountEl.textContent = `₹${gstAmount.toFixed(2)}`;
+                totalAmountEl.textContent = `₹${totalAmount.toFixed(2)}`;
+                
+                // Show results
+                gstResults.style.display = 'block';
+            }
+            
+            // Event listeners for GST calculator
+            calculateBtn.addEventListener('click', calculateGST);
+            
+            // Calculate on input change (with debounce)
+            let calculateTimeout;
+            amountInput.addEventListener('input', function() {
+                clearTimeout(calculateTimeout);
+                calculateTimeout = setTimeout(calculateGST, 300);
+            });
+            
+            // Calculate when GST rate or calculation type changes
+            gstRateRadios.forEach(radio => {
+                radio.addEventListener('change', calculateGST);
+            });
+            
+            calcTypeRadios.forEach(radio => {
+                radio.addEventListener('change', calculateGST);
+            });
+            
+            // Notification function
+            function showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = 'notification';
+                
+                if (type === 'error') {
+                    notification.classList.add('error');
+                } else {
+                    notification.classList.add('success');
+                }
+                
+                // Show notification
+                setTimeout(() => {
+                    notification.classList.add('show');
+                }, 100);
+                
+                // Hide after delay
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
